@@ -1,0 +1,28 @@
+# Contexto do Projeto
+Nome: ChronoGlass
+Descrição: SaaS de colaboração assíncrona para times globais. Exibe fusos horários, status de membros e um feed de daily stand-ups.
+Público-alvo: Equipes remotas e distribuídas.
+
+# Stack Tecnológica
+- Framework Principal: Next.js 14+ (App Router obrigatoriamente)
+- Linguagem: TypeScript
+- Estilização: Tailwind CSS
+- Animações: Framer Motion
+- Backend/API: Next.js Server Actions
+- Banco de Dados e Autenticação: Supabase
+- Deploy: Vercel
+
+# Regras de Design e UI (A "Vibe")
+- Estilo: "Apple Liquid Glass" / Glassmorphism.
+- Tema: Dark Mode nativo e exclusivo.
+- Backgrounds: Escuros com formas orgânicas (blobs) com gradientes vibrantes sutis se movendo lentamente via Framer Motion.
+- Componentes: Uso extensivo de `backdrop-blur`, painéis translúcidos (fundo com opacidade baixa), bordas finas (1px, brancas ou translúcidas) para simular o reflexo do vidro.
+- Tipografia: Inter (fornecida pelo Next.js/Google Fonts), peso leve para descrições, negrito para horários/dados importantes. Limpo e minimalista.
+
+# Regras de Código para a IA do Cursor
+1. NÃO utilize `pages/` directory. Use APENAS o `app/` directory do Next.js.
+2. Todo componente deve ser um Server Component por padrão. Adicione `"use client"` apenas no topo dos arquivos que precisarem de interatividade (hooks, Framer Motion, onClick).
+3. Escreva um código limpo, modular e altamente comentado em português para ajudar o usuário iniciante a entender a lógica.
+4. Utilize as classes do Tailwind de forma semântica.
+5. Quando criar animações com Framer Motion, prefira transições suaves (spring) e evite animações bruscas que quebrem a fluidez do vidro.
+6. Ao lidar com datas e fusos horários, prefira usar o objeto nativo `Intl.DateTimeFormat` do JavaScript ou a biblioteca `date-fns` para garantir leveza e precisão.
