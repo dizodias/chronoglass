@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,10 @@ import LanguageToggle from "@/components/LanguageToggle";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/contexts/LanguageContext";
 
+/**
+ * Página principal do ChronoGlass.
+ * - Exibe header, grid de membros da equipe, overlap de horários e feed de stand-ups.
+ */
 export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [authMessage, setAuthMessage] = useState<string | null>(null);
@@ -19,29 +23,26 @@ export default function Home() {
   useEffect(() => {
     let isMounted = true;
 
+    // Busca os membros da equipe a partir do Supabase
     const fetchTeamMembers = async () => {
       const { data, error } = await supabase.from("profiles").select("*");
-
       if (error) {
         console.error("Erro ao carregar membros da equipe:", error.message);
         return;
       }
-
       if (isMounted) {
         setTeamMembers(data ?? []);
       }
     };
 
+    // Valida a sessão do usuário ao abrir o app
     const fetchSession = async () => {
       const { data, error } = await supabase.auth.getSession();
-
       if (error) {
         console.error("Erro ao buscar sessão:", error.message);
         return;
       }
-
       const session = data.session;
-
       if (!session) {
         setAuthMessage(translations.header.sessionExpired);
         router.push("/login");
@@ -53,6 +54,7 @@ export default function Home() {
 
     fetchSession();
 
+    // Listener para mudanças na autenticação
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -70,8 +72,11 @@ export default function Home() {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, [router]);
+  }, [router, translations.header.sessionExpired]);
 
+  /**
+   * Função para realizar logout do usuário.
+   */
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -80,6 +85,24 @@ export default function Home() {
     }
     setUser(null);
     router.push("/login");
+  };
+
+  /**
+   * Função genérica de login.
+   * Exemplo de como você usaria o redirect usando window.location.origin:
+   */
+  const handleLogin = async (provider: "github" | "google") => {
+    try {
+      // Usa sempre o domínio atual para o redirect (produção/local/dev)
+      await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}`,
+        },
+      });
+    } catch (error: any) {
+      console.error("Erro ao realizar login:", error.message);
+    }
   };
 
   return (
