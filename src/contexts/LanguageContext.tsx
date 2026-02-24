@@ -4,7 +4,48 @@ import React, { createContext, useContext, useMemo, useState } from "react";
 
 type Language = "en" | "pt";
 
-const translations = {
+/**
+ * Interface genérica para as traduções, garantindo compatibilidade
+ * nas propriedades para os idiomas suportados.
+ */
+interface TranslationsType {
+  header: {
+    welcomePrefix: string;
+    loadingSession: string;
+    signOut: string;
+    sessionExpired: string;
+  };
+  titles: {
+    teamMembers: string;
+    timeOverlap: string;
+    dailyStandups: string;
+  };
+  standups: {
+    sectionLabel: string;
+    yesterdayLabel: string;
+    yesterdayPlaceholder: string;
+    todayLabel: string;
+    todayPlaceholder: string;
+    blockersLabel: string;
+    blockersPlaceholder: string;
+    publishButton: string;
+    remoteDailyTag: string;
+    yesterdayTitle: string;
+    todayTitle: string;
+    blockersTitle: string;
+  };
+  statuses: {
+    trabalhando: string;
+    dormindo: string;
+    offline: string;
+  };
+  roles: {
+    teamMember: string;
+  };
+}
+
+// Aplica a tipagem genérica ao objeto de traduções
+const translations: Record<Language, TranslationsType> = {
   en: {
     header: {
       welcomePrefix: "Welcome,",
@@ -79,15 +120,13 @@ const translations = {
       teamMember: "Membro da Equipe",
     },
   },
-} as const;
-
-type Translations = (typeof translations)["en"];
+};
 
 type LanguageContextValue = {
   language: Language;
   setLanguage: (lang: Language) => void;
   toggleLanguage: () => void;
-  translations: Translations;
+  translations: TranslationsType;
 };
 
 const LanguageContext = createContext<LanguageContextValue | undefined>(
@@ -97,6 +136,7 @@ const LanguageContext = createContext<LanguageContextValue | undefined>(
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<Language>("en");
 
+  // Assegura tipagem correta para translations independentemente do idioma
   const value = useMemo<LanguageContextValue>(
     () => ({
       language,
@@ -122,4 +162,3 @@ export function useLanguage() {
   }
   return context;
 }
-
