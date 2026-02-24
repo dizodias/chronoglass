@@ -44,7 +44,6 @@ interface TranslationsType {
   };
 }
 
-// Aplica a tipagem genérica ao objeto de traduções
 const translations: Record<Language, TranslationsType> = {
   en: {
     header: {
@@ -136,7 +135,6 @@ const LanguageContext = createContext<LanguageContextValue | undefined>(
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<Language>("en");
 
-  // Assegura tipagem correta para translations independentemente do idioma
   const value = useMemo<LanguageContextValue>(
     () => ({
       language,
