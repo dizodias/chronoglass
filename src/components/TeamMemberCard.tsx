@@ -1,39 +1,33 @@
 import Image from "next/image";
-import { useLanguage } from "@/contexts/LanguageContext";
 
-type Status = "trabalhando" | "dormindo" | "offline";
+type Status = "working" | "sleeping" | "offline";
 
 export type TeamMemberCardProps = {
   name: string;
   role: string;
-  timezone?: string; // Agora pode ser opcional
+  timezone?: string;
   avatarUrl?: string | null;
   status: Status;
 };
 
 const statusStyles: Record<Status, string> = {
-  trabalhando: "bg-emerald-500",
-  dormindo: "bg-blue-900",
+  working: "bg-emerald-500",
+  sleeping: "bg-blue-900",
   offline: "bg-zinc-500",
 };
 
-/**
- * Retorna a hora local formatada (HH:mm) para o timezone informado.
- * Usa Intl.DateTimeFormat nativo do JavaScript.
- */
+// Returns the local time (HH:mm) for the given timezone using Intl.DateTimeFormat.
 function getLocalTime(timezone?: string): string | null {
   if (!timezone) return null;
   const now = new Date();
-  return new Intl.DateTimeFormat("pt-BR", {
+  return new Intl.DateTimeFormat("en-US", {
     timeZone: timezone,
     hour: "2-digit",
     minute: "2-digit",
   }).format(now);
 }
 
-/**
- * Extrai iniciais do nome (ex: "Maria Silva" -> "MS").
- */
+// Extracts initials from the name (e.g. "Maria Silva" -> "MS").
 function getInitials(name: string): string {
   return name
     .split(" ")
@@ -50,21 +44,26 @@ export default function TeamMemberCard({
   avatarUrl,
   status,
 }: TeamMemberCardProps) {
-  const { translations } = useLanguage();
   const localTime = getLocalTime(timezone);
   const statusDotClass = statusStyles[status];
 
   let displayRole = role;
   if (role === "Membro da Equipa" || role === "Team Member") {
-    displayRole = translations.roles.teamMember;
+    displayRole = "Team Member";
   }
+
+  const statusTitleMap: Record<Status, string> = {
+    working: "Working",
+    sleeping: "Sleeping",
+    offline: "Offline",
+  };
 
   return (
     <article
       className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-sm"
       aria-label={`${name}, ${role}`}
     >
-      {/* Esquerda: avatar + nome e cargo */}
+      {/* Left side: avatar + name and role */}
       <div className="flex min-w-0 flex-1 items-center gap-4">
         {avatarUrl ? (
           <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/5">
@@ -84,27 +83,23 @@ export default function TeamMemberCard({
         <div className="min-w-0">
           <p className="truncate font-medium text-white">{name}</p>
           <p className="truncate text-sm text-white/60">{displayRole}</p>
-          {/* Exibe o timezone logo abaixo do cargo, discreto, caso exista */}
+          {/* Show timezone below the role, subtly, when available */}
           {timezone && (
-            <p className="truncate text-xs text-white/50 font-mono">{timezone}</p>
+            <p className="truncate text-xs font-mono text-white/50">
+              {timezone}
+            </p>
           )}
         </div>
       </div>
 
-      {/* Direita: hora em destaque + bolinha de status */}
-      <div className="flex flex-shrink-0 flex-col items-end justify-center gap-1 min-w-[65px]">
-        {/* Hora principal em destaque */}
+      {/* Right side: time and status dot */}
+      <div className="min-w-[65px] flex flex-shrink-0 flex-col items-end justify-center gap-1">
         <span className="text-2xl font-bold tabular-nums text-white">
           {localTime}
         </span>
-        {/* Alternativa: para exibir o timezone sob a hora (remover do bloco acima se quiser este layout) */}
-        {/* {timezone && (
-          <span className="text-xs text-white/50 font-mono">{timezone}</span>
-        )} */}
-        {/* Bolinha de status */}
         <span
           className={`h-3 w-3 rounded-full ${statusDotClass}`}
-          title={translations.statuses[status]}
+          title={statusTitleMap[status]}
           aria-hidden
         />
       </div>

@@ -5,29 +5,26 @@ import { useRouter } from "next/navigation";
 import TeamMemberCard from "@/components/TeamMemberCard";
 import TimeOverlapBar from "@/components/TimeOverlapBar";
 import StandupFeed from "@/components/StandupFeed";
-import LanguageToggle from "@/components/LanguageToggle";
 import { supabase } from "@/lib/supabase";
-import { useLanguage } from "@/contexts/LanguageContext";
 
-/**
- * Página principal do ChronoGlass.
- * - Exibe header, grid de membros da equipe, overlap de horários e feed de stand-ups.
- */
 export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [authMessage, setAuthMessage] = useState<string | null>(null);
   const [teamMembers, setTeamMembers] = useState<any[]>([]);
   const router = useRouter();
-  const { translations } = useLanguage();
+
+  const SESSION_EXPIRED_MESSAGE =
+    "Your session has expired. Redirecting to the login screen…";
+  const LOADING_SESSION_MESSAGE = "Loading session…";
 
   useEffect(() => {
     let isMounted = true;
 
-    // Busca os membros da equipe a partir do Supabase
+    // Fetch team members from Supabase
     const fetchTeamMembers = async () => {
       const { data, error } = await supabase.from("profiles").select("*");
       if (error) {
-        console.error("Erro ao carregar membros da equipe:", error.message);
+        console.error("Error loading team members:", error.message);
         return;
       }
       if (isMounted) {
@@ -35,16 +32,16 @@ export default function Home() {
       }
     };
 
-    // Valida a sessão do usuário ao abrir o app
+    // Validate current user session on app load
     const fetchSession = async () => {
       const { data, error } = await supabase.auth.getSession();
       if (error) {
-        console.error("Erro ao buscar sessão:", error.message);
+        console.error("Error fetching session:", error.message);
         return;
       }
       const session = data.session;
       if (!session) {
-        setAuthMessage(translations.header.sessionExpired);
+        setAuthMessage(SESSION_EXPIRED_MESSAGE);
         router.push("/login");
       } else if (isMounted) {
         setUser(session.user);
@@ -54,13 +51,13 @@ export default function Home() {
 
     fetchSession();
 
-    // Listener para mudanças na autenticação
+    // Listen for auth state changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         setUser(null);
-        setAuthMessage(translations.header.sessionExpired);
+        setAuthMessage(SESSION_EXPIRED_MESSAGE);
         router.push("/login");
       } else {
         setUser(session.user);
@@ -72,37 +69,16 @@ export default function Home() {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, [router, translations.header.sessionExpired]);
+  }, [router, SESSION_EXPIRED_MESSAGE]);
 
-  /**
-   * Função para realizar logout do usuário.
-   */
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error("Erro ao sair:", error.message);
+      console.error("Error signing out:", error.message);
       return;
     }
     setUser(null);
     router.push("/login");
-  };
-
-  /**
-   * Função genérica de login.
-   * Exemplo de como você usaria o redirect usando window.location.origin:
-   */
-  const handleLogin = async (provider: "github" | "google") => {
-    try {
-      // Usa sempre o domínio atual para o redirect (produção/local/dev)
-      await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}`,
-        },
-      });
-    } catch (error: any) {
-      console.error("Erro ao realizar login:", error.message);
-    }
   };
 
   return (
@@ -115,38 +91,35 @@ export default function Home() {
           </h1>
           <p className="mt-1 text-xs text-white/60">
             {user
-              ? `${translations.header.welcomePrefix} ${
-                  user.user_metadata?.full_name ?? user.email ?? "usuário"
+              ? `Welcome, ${
+                  user.user_metadata?.full_name ?? user.email ?? "user"
                 }`
-              : authMessage ?? translations.header.loadingSession}
+              : authMessage ?? LOADING_SESSION_MESSAGE}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <LanguageToggle />
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-medium text-white/80 shadow-sm backdrop-blur-md transition hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
-          >
-            {translations.header.signOut}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-medium text-white/80 shadow-sm backdrop-blur-md transition hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+        >
+          Sign Out
+        </button>
       </header>
 
-      {/* Sobreposição de Horários */}
+      {/* Time Overlap */}
       <section className="mt-8" aria-labelledby="overlap-title">
         <h2
           id="overlap-title"
           className="mb-4 text-3xl font-light tracking-wide text-white"
         >
-          {translations.titles.timeOverlap}
+          Time Overlap
         </h2>
         <TimeOverlapBar users={teamMembers} />
       </section>
 
-      {/* Grid de cards */}
+      {/* Cards grid */}
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* Card: Membros da Equipe (2 colunas no desktop) */}
+        {/* Card: Team Members (2 columns on desktop) */}
         <section
           className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl lg:col-span-2"
           aria-labelledby="card-membros"
@@ -155,7 +128,7 @@ export default function Home() {
             id="card-membros"
             className="text-xl font-semibold tracking-tight text-white"
           >
-            {translations.titles.teamMembers}
+            Team Members
           </h2>
           <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             {teamMembers.map((member) => (
@@ -165,14 +138,13 @@ export default function Home() {
                 role={member.role}
                 timezone={member.timezone}
                 avatarUrl={member.avatar_url}
-                status="trabalhando"
+                status="working"
               />
             ))}
           </div>
         </section>
 
-        {/* Card: Daily Stand-ups (1 coluna) */}
-        {/* Exibe o componente StandupFeed no lugar do placeholder */}
+        {/* Card: Daily Stand-ups (1 column) */}
         <StandupFeed />
       </div>
     </main>

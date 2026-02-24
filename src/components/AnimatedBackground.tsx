@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 
 /**
- * Fundo animado no estilo "Apple Liquid Glass".
- * Três blobs translúcidos com blur que se movem lentamente para criar profundidade.
+ * Animated background in an "Apple Liquid Glass" style.
+ * Three translucent blurred blobs that move slowly to create depth.
  */
 export default function AnimatedBackground() {
   return (
@@ -12,7 +12,7 @@ export default function AnimatedBackground() {
       className="pointer-events-none fixed inset-0 z-[-1] overflow-hidden"
       aria-hidden
     >
-      {/* Blob 1 - azul */}
+      {/* Blob 1 - blue */}
       <motion.div
         className="absolute h-[500px] w-[500px] rounded-full bg-blue-600/20 blur-[120px]"
         style={{ left: "10%", top: "20%" }}
@@ -27,7 +27,7 @@ export default function AnimatedBackground() {
           repeatType: "mirror",
         }}
       />
-      {/* Blob 2 - roxo */}
+      {/* Blob 2 - purple */}
       <motion.div
         className="absolute h-[500px] w-[500px] rounded-full bg-purple-600/20 blur-[120px]"
         style={{ right: "15%", top: "40%" }}
@@ -42,7 +42,7 @@ export default function AnimatedBackground() {
           repeatType: "mirror",
         }}
       />
-      {/* Blob 3 - esmeralda */}
+      {/* Blob 3 - emerald */}
       <motion.div
         className="absolute h-[500px] w-[500px] rounded-full bg-emerald-600/20 blur-[120px]"
         style={{ left: "35%", bottom: "15%" }}

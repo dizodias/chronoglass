@@ -1,9 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useLanguage } from "@/contexts/LanguageContext";
 
-/** Tipo do usuário (compatível com mockUsers da página). */
 export type TimeOverlapUser = {
   name: string;
   role: string;
@@ -20,9 +18,7 @@ const WORK_START = 9; // 09:00
 const WORK_END = 18; // 18:00
 const MINUTES_PER_DAY = 24 * 60;
 
-/**
- * Retorna a hora local (0-24) e minuto para um instante UTC em um timezone.
- */
+// Returns local hour (0–24) and minute for a UTC instant in a given timezone.
 function getLocalHourMinute(date: Date, timezone: string): { hour: number; minute: number } {
   const formatter = new Intl.DateTimeFormat("en-GB", {
     timeZone: timezone,
@@ -36,10 +32,8 @@ function getLocalHourMinute(date: Date, timezone: string): { hour: number; minut
   return { hour, minute };
 }
 
-/**
- * Calcula onde o horário comercial (09:00–18:00 no fuso local) cai na régua de 24h UTC.
- * Retorna start e width em porcentagem (0–100).
- */
+// Computes where the local working hours (09:00–18:00) fall on the 24h UTC timeline.
+// Returns start and width in percentages (0–100).
 function getWorkSegmentPercentages(timezone: string): { startPercent: number; widthPercent: number } {
   const now = new Date();
   const year = now.getUTCFullYear();
@@ -69,18 +63,16 @@ function getWorkSegmentPercentages(timezone: string): { startPercent: number; wi
   const start = startMin ?? 0;
   const end = endMin ?? MINUTES_PER_DAY;
   const startPercent = (start / MINUTES_PER_DAY) * 100;
-  // Se o expediente cruzar meia-noite UTC, evita largura negativa
+  // If business hours cross midnight UTC, avoid negative width
   const widthPercent = Math.max(0, ((end - start) / MINUTES_PER_DAY) * 100);
 
   return { startPercent, widthPercent };
 }
 
 export default function TimeOverlapBar({ users }: TimeOverlapBarProps) {
-  const { translations } = useLanguage();
-
   return (
     <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl">
-      {/* Régua de 24h UTC */}
+      {/* 24h UTC ruler */}
       <div className="mb-4 flex justify-between text-xs text-white/50">
         <span>0h UTC</span>
         <span>6h</span>

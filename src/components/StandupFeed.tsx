@@ -3,8 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { formatDistanceToNow } from "date-fns";
-import { enUS, ptBR } from "date-fns/locale";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { enUS } from "date-fns/locale";
 
 type Profile = {
   name: string | null;
@@ -25,7 +24,6 @@ const StandupFeed: React.FC = () => {
   const [yesterday, setYesterday] = useState("");
   const [today, setToday] = useState("");
   const [blockers, setBlockers] = useState("");
-   const { language, translations } = useLanguage();
 
   const loadStandups = async () => {
     const { data, error } = await supabase
@@ -34,7 +32,7 @@ const StandupFeed: React.FC = () => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Erro ao carregar standups:", error.message);
+      console.error("Error loading standups:", error.message);
       return;
     }
 
@@ -57,7 +55,7 @@ const StandupFeed: React.FC = () => {
 
     if (userError || !user) {
       console.error(
-        "Não foi possível obter o utilizador autenticado.",
+        "Could not retrieve the authenticated user.",
         userError?.message
       );
       return;
@@ -73,7 +71,7 @@ const StandupFeed: React.FC = () => {
     ]);
 
     if (insertError) {
-      console.error("Erro ao publicar standup:", insertError.message);
+      console.error("Error publishing standup:", insertError.message);
       return;
     }
 
@@ -92,24 +90,24 @@ const StandupFeed: React.FC = () => {
         id="card-daily"
         className="text-xl font-semibold tracking-tight text-white"
       >
-        {translations.titles.dailyStandups}
+        Daily Stand-ups
       </h2>
 
-      {/* Nova Atualização */}
+      {/* New update form */}
       <div className="mt-4 space-y-3 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-white shadow-inner backdrop-blur-2xl">
         <p className="text-xs font-medium uppercase tracking-[0.16em] text-white/60">
-          {translations.standups.sectionLabel}
+          New update
         </p>
 
         <div className="space-y-3">
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-white/70">
-              {translations.standups.yesterdayLabel}
+              What did I do yesterday?
             </label>
             <textarea
               rows={2}
               className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs text-white shadow-sm outline-none backdrop-blur-md placeholder:text-white/30 focus:ring-2 focus:ring-white/20"
-              placeholder={translations.standups.yesterdayPlaceholder}
+              placeholder="Quick summary of what you completed yesterday…"
               value={yesterday}
               onChange={(event) => setYesterday(event.target.value)}
             />
@@ -117,12 +115,12 @@ const StandupFeed: React.FC = () => {
 
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-white/70">
-              {translations.standups.todayLabel}
+              What will I do today?
             </label>
             <textarea
               rows={2}
               className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs text-white shadow-sm outline-none backdrop-blur-md placeholder:text-white/30 focus:ring-2 focus:ring-white/20"
-              placeholder={translations.standups.todayPlaceholder}
+              placeholder="What are the most important things I plan to deliver…"
               value={today}
               onChange={(event) => setToday(event.target.value)}
             />
@@ -130,12 +128,12 @@ const StandupFeed: React.FC = () => {
 
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-white/70">
-              {translations.standups.blockersLabel}
+              Blockers?
             </label>
             <textarea
               rows={2}
               className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs text-white shadow-sm outline-none backdrop-blur-md placeholder:text-white/30 focus:ring-2 focus:ring-white/20"
-              placeholder={translations.standups.blockersPlaceholder}
+              placeholder="Any risk, dependency or blocker where you need help…"
               value={blockers}
               onChange={(event) => setBlockers(event.target.value)}
             />
@@ -148,7 +146,7 @@ const StandupFeed: React.FC = () => {
             onClick={handlePublish}
             className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-500/90 via-purple-500/90 to-pink-500/90 px-4 py-1.5 text-xs font-medium text-white shadow-[0_0_18px_rgba(168,85,247,0.55)] transition hover:shadow-[0_0_26px_rgba(168,85,247,0.85)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20"
           >
-            {translations.standups.publishButton}
+            Publish
           </button>
         </div>
       </div>
@@ -157,8 +155,7 @@ const StandupFeed: React.FC = () => {
       <div className="mt-6 space-y-3 overflow-y-auto">
         {standups.map((standup) => {
           const profile = standup.profiles;
-          const displayName =
-            profile?.name ?? (language === "pt" ? "Membro remoto" : "Remote member");
+          const displayName = profile?.name ?? "Remote member";
           const avatarUrl =
             profile?.avatar_url ??
             `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(
@@ -166,7 +163,7 @@ const StandupFeed: React.FC = () => {
             )}`;
           const timestamp = formatDistanceToNow(new Date(standup.created_at), {
             addSuffix: true,
-            locale: language === "pt" ? ptBR : enUS,
+            locale: enUS,
           });
 
           return (
@@ -186,7 +183,7 @@ const StandupFeed: React.FC = () => {
                     {displayName}
                   </p>
                   <p className="text-[10px] uppercase tracking-[0.16em] text-emerald-300/80">
-                    {translations.standups.remoteDailyTag}
+                    Remote daily
                   </p>
                 </div>
               </div>
@@ -198,7 +195,7 @@ const StandupFeed: React.FC = () => {
             <div className="space-y-2">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/50">
-                  {translations.standups.yesterdayTitle}
+                  Yesterday
                 </p>
                 <p className="mt-0.5 text-xs text-white/80">
                   {standup.yesterday}
@@ -206,7 +203,7 @@ const StandupFeed: React.FC = () => {
               </div>
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/50">
-                  {translations.standups.todayTitle}
+                  Today
                 </p>
                 <p className="mt-0.5 text-xs text-white/80">
                   {standup.today}
@@ -214,7 +211,7 @@ const StandupFeed: React.FC = () => {
               </div>
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/50">
-                  {translations.standups.blockersTitle}
+                  Blockers
                 </p>
                 <p className="mt-0.5 text-xs text-white/80">
                   {standup.blockers}

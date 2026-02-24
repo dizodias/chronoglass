@@ -17,7 +17,7 @@ export default function LoginPage() {
     });
 
     if (error) {
-      console.error("Erro ao iniciar login com GitHub:", error.message);
+      console.error("Error starting GitHub login:", error.message);
     }
   };
 
@@ -29,14 +29,14 @@ export default function LoginPage() {
         <section className="w-full rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-2xl">
           <header className="mb-6 text-center">
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-white/60">
-              Bem-vindo
+              Welcome
             </p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">
-              Entrar no ChronoGlass
+              Sign in to ChronoGlass
             </h1>
             <p className="mt-2 text-xs text-white/60">
-              Centralize seus daily stand-ups, horários e rituais remotos em um
-              único lugar.
+              Centralize your daily stand-ups, time zones and async rituals in a
+              single place.
             </p>
           </header>
 
@@ -46,12 +46,12 @@ export default function LoginPage() {
             className="flex w-full items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-black/40 transition hover:bg-white/20 hover:shadow-[0_0_26px_rgba(255,255,255,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
           >
             <Github className="h-4 w-4" />
-            <span>Entrar com o GitHub</span>
+            <span>Sign in with GitHub</span>
           </button>
 
           <p className="mt-4 text-[10px] text-center text-white/40">
-            Usaremos apenas seu nome, avatar e e-mail do GitHub para criar sua
-            conta.
+            We will only use your GitHub name, avatar and email to create your
+            account.
           </p>
         </section>
       </div>
