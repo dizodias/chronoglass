@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
 
 type Language = "en" | "pt";
 
@@ -133,7 +133,13 @@ const LanguageContext = createContext<LanguageContextValue | undefined>(
 );
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  // Sempre inicia com "en" sem leitura do localStorage
   const [language, setLanguage] = useState<Language>("en");
+
+  // Apenas para forçar novo commit, não afeta lógica real
+  useEffect(() => {
+    console.log('Ambiente de Produção Limpo');
+  }, []);
 
   const value = useMemo<LanguageContextValue>(
     () => ({
